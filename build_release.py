@@ -61,16 +61,23 @@ def build(repo=None, tag="v1.0.0", output=None):
     assets = [output / "install.py", output / "pets.json"] + [output / p["asset"] for p in catalog["pets"]]
     (output / "SHA256SUMS").write_text("".join(sha256(path.read_bytes()) + "  " + path.name + "\n" for path in assets))
     command = ""
+    commands = {}
     if base:
-        command = "(set -e; pet_installer=$(mktemp); trap 'rm -f \"$pet_installer\"' EXIT; curl -fsSL '" + base + "/install.py' -o \"$pet_installer\"; python3 \"$pet_installer\" --pet capybara-chibi)"
-    notes = """Q 版卡皮巴拉宠物包和一行更换工具。
+        for pet in catalog["pets"]:
+            commands[pet["id"]] = "(set -e; pet_installer=$(mktemp); trap 'rm -f \"$pet_installer\"' EXIT; curl --proto '=https' --tlsv1.2 -fsSL '" + base + "/install.py' -o \"$pet_installer\"; python3 \"$pet_installer\" --pet " + pet["id"] + ")"
+            (output / ("INSTALL_COMMAND-" + pet["id"] + ".txt")).write_text(commands[pet["id"]] + "\n")
+        command = commands.get("sheep-chibi") or next(iter(commands.values()), "")
+    notes = """卷卷小羊与宠物快捷更换工具。
 
-包含眨眼、左右走动、挥手、扭屁股、失落、等待、专注处理、检查结果，以及 16 个张望朝向。
+新增奶白卷毛小羊女生：等待确认和回复未读状态显示抱臂傲娇脸；原跳跃动作改成坐着委屈地望着你。保留卡皮巴拉安装选项。
 
-安装器会校验 ZIP 和图集、保留旧宠物备份，并保存默认选择。需要 Python 3.9 或更新版本。
+应用限制：正式选择/确认触发 waiting，普通文字回复未读触发 review，已读后是 idle。当前桌面应用等待动画约 3 秒后回到日常，悬停会覆盖为原 jumping 状态（现为委屈表情）。宠物包无法修改应用的状态识别和播放时长。
+
+安装器会校验 ZIP 和图集、保留旧宠物备份，并保存默认选择。支持按包内 ID 离线安装。需要 Python 3.9 或更新版本。如果应用缓存旧图集，重新选择宠物或重启应用。
 """
-    if command:
-        notes += "\n安装命令：\n\n```sh\n" + command + "\n```\n"
+    for pet in catalog["pets"]:
+        if pet["id"] in commands:
+            notes += "\n" + pet["displayName"] + "：\n\n```sh\n" + commands[pet["id"]] + "\n```\n"
     (output / "RELEASE.md").write_text(notes)
     if command:
         (output / "INSTALL_COMMAND.txt").write_text(command + "\n")

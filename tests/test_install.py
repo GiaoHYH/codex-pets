@@ -15,17 +15,18 @@ installer = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(installer)
 
 
-def bundle(extra=None, wrong_sprite_hash=False):
-    sprite = (ROOT / "packages/capybara-chibi/spritesheet.webp").read_bytes()
-    manifest = (ROOT / "packages/capybara-chibi/pet.json").read_bytes()
-    hashes = {"pet.json": installer.digest(manifest), "spritesheet.webp": installer.digest(sprite)}
+def bundle(extra=None, wrong_sprite_hash=False, pet_id="capybara-chibi"):
+    manifest = (ROOT / "packages" / pet_id / "pet.json").read_bytes()
+    sprite_name = json.loads(manifest)["spritesheetPath"]
+    sprite = (ROOT / "packages" / pet_id / sprite_name).read_bytes()
+    hashes = {"pet.json": installer.digest(manifest), sprite_name: installer.digest(sprite)}
     if wrong_sprite_hash:
-        hashes["spritesheet.webp"] = "0" * 64
-    meta = {"formatVersion": 1, "id": "capybara-chibi", "sha256": hashes}
+        hashes[sprite_name] = "0" * 64
+    meta = {"formatVersion": 1, "id": pet_id, "sha256": hashes}
     out = io.BytesIO()
     with zipfile.ZipFile(out, "w") as archive:
         archive.writestr("pet.json", manifest)
-        archive.writestr("spritesheet.webp", sprite)
+        archive.writestr(sprite_name, sprite)
         archive.writestr("bundle.json", json.dumps(meta))
         if extra:
             archive.writestr(extra, "untrusted")
@@ -33,6 +34,30 @@ def bundle(extra=None, wrong_sprite_hash=False):
 
 
 class InstallTests(unittest.TestCase):
+    def test_sheep_offline_infers_identity(self):
+        with tempfile.TemporaryDirectory() as temp:
+            package = Path(temp) / "sheep.zip"
+            package.write_bytes(bundle(pet_id="sheep-chibi"))
+            home = Path(temp) / "home"
+            self.assertEqual(installer.main(["--package", str(package), "--codex-home", str(home)]), 0)
+            self.assertEqual(installer.selection((home / "config.toml").read_text()), "custom:sheep-chibi")
+            self.assertTrue((home / "pets/sheep-chibi/spritesheet.png").exists())
+
+    def test_explicit_wrong_pet_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "不一致"):
+            installer.validate_package(bundle(pet_id="sheep-chibi"), expected_id="capybara-chibi")
+
+    def test_sheep_update_restores_previous_atlas(self):
+        with tempfile.TemporaryDirectory() as temp:
+            home = Path(temp)
+            previous = home / "pets/sheep-chibi"
+            previous.mkdir(parents=True)
+            (previous / "spritesheet.png").write_bytes(b"previous artwork")
+            (home / "config.toml").write_text('[desktop]\nselected-avatar-id = "custom:sheep-chibi"\n')
+            installer.install(bundle(pet_id="sheep-chibi"), home)
+            installer.restore(home,"sheep-chibi")
+            self.assertEqual((previous / "spritesheet.png").read_bytes(),b"previous artwork")
+
     def test_real_package_installs_and_selects(self):
         with tempfile.TemporaryDirectory() as temp:
             home = Path(temp)

@@ -248,7 +248,7 @@ def restore(home, pet_id):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--pet", default="capybara-chibi", help="宠物 ID")
+    parser.add_argument("--pet", help="宠物 ID；远程安装默认 capybara-chibi，离线从包内读取")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL, help="GitHub Release 资源根地址")
     parser.add_argument("--codex-home", type=Path, default=Path(os.environ.get("CODEX_HOME", str(Path.home()/".codex"))))
     parser.add_argument("--list", action="store_true", help="列出 Release 中的宠物")
@@ -259,6 +259,8 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         if args.restore:
+            if not args.pet:
+                fail("恢复时请使用 --pet 指定宠物 ID。")
             backup = restore(args.codex_home.expanduser().absolute(), args.pet)
             print("已恢复：" + args.pet + "（备份 " + str(backup) + "）")
             return 0
@@ -266,6 +268,7 @@ def main(argv=None):
             data = args.package.read_bytes()
             expected = args.sha256
         else:
+            args.pet = args.pet or "capybara-chibi"
             if not args.base_url:
                 fail("尚未配置 Release 地址，请使用 --base-url。")
             base = https_url(args.base_url.rstrip("/") + "/")
