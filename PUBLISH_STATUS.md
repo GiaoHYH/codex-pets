@@ -1,5 +1,24 @@
 # 发布进度
 
+## v1.1.1 卡皮巴拉正面左右扭胯修正
+
+2026-10-17 已发布：https://github.com/GiaoHYH/codex-pets/releases/tag/v1.1.1
+
+- 修正 `capybara-chibi` 的 `jumping` 行：动作改为正面左右扭胯，不再转身背对。
+- 保留 `sheep-chibi` 发布包和安装命令。
+- 14 项安装器测试通过。
+- 已从公开 Release 真实下载安装器并安装 `capybara-chibi` 到临时 `CODEX_HOME`。
+- 已验证默认选择写入 `desktop.selected-avatar-id = "custom:capybara-chibi"`。
+- 本机当前安装图集已同步为同一版本。
+- 卡皮巴拉图集 SHA-256：`d5bf50724d09becc22c139ca7f954086cd6bf701f5541ca59d2c2575c11e767f`。
+- 卡皮巴拉 ZIP SHA-256：`b2f82a82f1225fc562cc85c45866d58c6c4867144a39ca583cc1ccd00971703f`。
+
+卡皮巴拉一行安装命令：
+
+```sh
+(set -e; pet_installer=$(mktemp); trap 'rm -f "$pet_installer"' EXIT; curl --proto '=https' --tlsv1.2 -fsSL 'https://github.com/GiaoHYH/codex-pets/releases/download/v1.1.1/install.py' -o "$pet_installer"; python3 "$pet_installer" --pet capybara-chibi)
+```
+
 ## v1.1.0 卷卷小羊
 
 2026-10-17 已发布：https://github.com/GiaoHYH/codex-pets/releases/tag/v1.1.0
