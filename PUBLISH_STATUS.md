@@ -1,12 +1,31 @@
 # 发布进度
 
-安装器、卡皮巴拉 ZIP、资源目录和 SHA-256 校验清单已完成。
+已完成，时间：2026-10-17（Asia/Shanghai）。
 
-已通过 11 项测试及发布版 CLI 的安装/恢复检查。
+发布仓库：
+https://github.com/GiaoHYH/codex-pets
 
-待完成：
-- GitHub CLI 浏览器授权（当前凭据无效，执行环境未能连接 github.com）。
-- 发布仓库地址，或授权新建仓库的名称与可见范围。
-- 生成绑定真实仓库/Release 的一行命令并发布下载资源。
+Release：
+https://github.com/GiaoHYH/codex-pets/releases/tag/v1.0.0
 
-仅 packages/capybara-chibi 中的宠物文件会打包；工作区其他内容不会上传。
+一行安装命令：
+
+```sh
+(set -e; pet_installer=$(mktemp); trap 'rm -f "$pet_installer"' EXIT; curl -fsSL 'https://github.com/GiaoHYH/codex-pets/releases/download/v1.0.0/install.py' -o "$pet_installer"; python3 "$pet_installer" --pet capybara-chibi)
+```
+
+已发布资源：
+- `install.py`
+- `pets.json`
+- `capybara-chibi.zip`
+- `SHA256SUMS`
+
+校验结果：
+- 11 项安装器测试通过。
+- 已从 GitHub Release 真实下载并安装到临时 `CODEX_HOME`。
+- 已验证默认选择写入 `desktop.selected-avatar-id = "custom:capybara-chibi"`。
+- 已验证恢复功能。
+- 最终图集 SHA-256：`57ea1fcc08d7219aa51f59cd440228204e8f18d44ce90a9cecb72a3f066afabc`。
+- ZIP SHA-256：`fbf6343741f27018210d43eac142f0c2a9408947b553582c81c615c72fe56a6f`。
+
+仅 `packages/capybara-chibi` 中的宠物文件被打包发布；工作区其他内容没有上传。
