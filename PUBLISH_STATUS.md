@@ -1,5 +1,17 @@
 # 发布进度
 
+## v1.1.2 小羊委屈表情前肢修正
+
+2026-10-19 已发布：https://github.com/GiaoHYH/codex-pets/releases/tag/v1.1.2
+
+- 修正小羊委屈动作全部五帧：胸前两只前蹄、下方两只后蹄，中间为连续的圆肚子。
+- 像素对比确认只更新小羊图集第 4 行，其他状态及卡皮巴拉素材保持原样。
+- 本机已安装同一图集，表情总览和动画预览已更新。
+- 五帧放大视觉检查、桌面及手机预览检查、14 项安装器测试通过。
+- 从公开 Release 下载的安装器、目录、宠物包与 SHA256SUMS 全部校验通过。
+- 小羊图集 SHA-256：`75ae37ced695c19e6538070af85a6eef9377718bd6e3b5f533a8aed4e6c2f8de`。
+- 小羊 ZIP SHA-256：`c5b2596081c2dcdcfaf72f5dda2a2fbe459762af62a83b7dec80f498dba47c1f`。
+
 ## v1.1.1 卡皮巴拉正面左右扭胯修正
 
 2026-10-17 已发布：https://github.com/GiaoHYH/codex-pets/releases/tag/v1.1.1
