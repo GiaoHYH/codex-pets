@@ -2,7 +2,9 @@
 
 从 GitHub Releases 下载宠物包，校验后安装，并保存为 Codex/ChatGPT 桌面应用的默认宠物。当前包含 `sheep-chibi` 卷卷小羊和 `capybara-chibi` Q 版卡皮巴拉。
 
-卷卷小羊：奶白卷毛、女生神态；等待确认及回复未读时抱臂傲娇，原跳跃动作改成坐着委屈地望着你。卡皮巴拉：保留原有动作，原跳跃动作改成正面左右扭胯，不转身。
+卷卷小羊：奶白卷毛、女生神态；等待确认时抱臂傲娇，回复待查看时开心微笑，原跳跃动作改成坐着委屈地望着你。卡皮巴拉：保留原有动作，原跳跃动作改成正面左右扭胯，不转身。
+
+`v1.1.3` 新增小羊的回复待查看开心动画：合手微笑、亮眼大笑、闭眼笑，再倒序回到起点。
 
 `v1.1.2` 修正小羊委屈动作的重复前肢：只有胸前两只前蹄和下方两只后蹄。
 
@@ -15,13 +17,13 @@
 安装小羊：
 
 ```sh
-(set -e; pet_installer=$(mktemp); trap 'rm -f "$pet_installer"' EXIT; curl --proto '=https' --tlsv1.2 -fsSL 'https://github.com/GiaoHYH/codex-pets/releases/download/v1.1.2/install.py' -o "$pet_installer"; python3 "$pet_installer" --pet sheep-chibi)
+(set -e; pet_installer=$(mktemp); trap 'rm -f "$pet_installer"' EXIT; curl --proto '=https' --tlsv1.2 -fsSL 'https://github.com/GiaoHYH/codex-pets/releases/download/v1.1.3/install.py' -o "$pet_installer"; python3 "$pet_installer" --pet sheep-chibi)
 ```
 
 安装卡皮巴拉：
 
 ```sh
-(set -e; pet_installer=$(mktemp); trap 'rm -f "$pet_installer"' EXIT; curl --proto '=https' --tlsv1.2 -fsSL 'https://github.com/GiaoHYH/codex-pets/releases/download/v1.1.2/install.py' -o "$pet_installer"; python3 "$pet_installer" --pet capybara-chibi)
+(set -e; pet_installer=$(mktemp); trap 'rm -f "$pet_installer"' EXIT; curl --proto '=https' --tlsv1.2 -fsSL 'https://github.com/GiaoHYH/codex-pets/releases/download/v1.1.3/install.py' -o "$pet_installer"; python3 "$pet_installer" --pet capybara-chibi)
 ```
 
 需要 Python 3.9+ 和 curl。安装器只使用 Python 标准库，不依赖 Pillow。默认安装到 `$CODEX_HOME/pets/`，未设置 CODEX_HOME 时使用 `~/.codex/pets/`。
@@ -49,7 +51,7 @@ python3 install.py --package dist/sheep-chibi.zip # 离线安装，自动读取�
 
 ## 小羊表情触发
 
-正式选择框、确认框触发 `waiting`；普通文字回复未读时触发 `review`。这两组都使用傲娇抱臂表情，因此普通文字提问也覆盖了未读阶段。回复已读后应用进入 `idle`，不会根据文字语义继续判断是否在等你作决定。
+正式选择框、确认框触发 `waiting`，使用傲娇抱臂表情；普通文字回复未读时触发 `review`，使用开心表情。回复已读后应用进入 `idle`，不会根据文字语义继续判断是否在等你作决定。
 
 当前桌面应用会在等待表情播放约 3 秒后回到日常。悬停也会优先覆盖状态，显示 `jumping` 所在行，小羊现已将这一行换成委屈的表情。自定义宠物资源不能改变这些应用播放规则，不能承诺在整个等回复期间持续生气。
 
@@ -57,8 +59,8 @@ python3 install.py --package dist/sheep-chibi.zip # 离线安装，自动读取�
 
 ```sh
 python3 -m unittest discover -s tests -v
-python3 build_release.py --repo GiaoHYH/codex-pets --tag v1.1.2
-gh release create v1.1.2 dist/install.py dist/pets.json dist/capybara-chibi.zip dist/sheep-chibi.zip dist/SHA256SUMS --repo GiaoHYH/codex-pets --title '小羊委屈表情前肢修正' --notes-file dist/RELEASE.md
+python3 build_release.py --repo GiaoHYH/codex-pets --tag v1.1.3
+gh release create v1.1.3 dist/install.py dist/pets.json dist/capybara-chibi.zip dist/sheep-chibi.zip dist/SHA256SUMS --repo GiaoHYH/codex-pets --title '小羊回复待查看开心表情' --notes-file dist/RELEASE.md
 ```
 
 新增宠物时，将合法的 `pet.json` 和对应 `spritesheet.webp` 或 `spritesheet.png` 放入 `packages/<宠物ID>/`，重新构建即可。只发布 `dist/` 的指定资源，不上传工作区中的其他文件或配置备份。
